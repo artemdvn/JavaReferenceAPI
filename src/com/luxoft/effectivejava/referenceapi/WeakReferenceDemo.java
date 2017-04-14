@@ -18,22 +18,29 @@ public class WeakReferenceDemo {
 		 * strong reference. As a result, that object will never be garbage
 		 * collected, and the polling loop will be infinite.
 		 */
+		
 		// Create a ReferenceQueue object that is strongly reachable from q.
-		ReferenceQueue q = new ReferenceQueue();
+		ReferenceQueue<String> q = new ReferenceQueue<String>();
+		
 		// Create a WeakReference object that is strongly reachable from wr.
 		// The WeakReference object encapsulates the String object that is
 		// referenced by key (so the String object is weakly-reachable from
 		// the WeakReference object), and associates the ReferenceQueue
 		// object, referenced by q, with the WeakReference object.
-		WeakReference wr = new WeakReference(key, q);
-		// Create an Object object that is strongly reachable from value.
-		Object value = new Object();
-		// Create a Hashtable object that is strongly reachable from ht.
-		WeakHashMap map = new WeakHashMap();
-		// Place the WeakReference and Object objects in the hash table.
+		WeakReference<String> wr = new WeakReference<String>(key, q);
+		
+		// Create an Employee object that is strongly reachable from value.
+		Employee value = new Employee("John Doe");
+		
+		// Create a WeakHashMap object that is strongly reachable from map.
+		WeakHashMap<WeakReference<String>, Employee> map = new WeakHashMap<WeakReference<String>, Employee>();
+		
+		// Place the WeakReference and Employee object to the map.
 		map.put(wr, value);
+		
 		// Remove the only strong reference to the String object.
 		key = null;
+		
 		// Poll reference queue until WeakReference object arrives.
 		Reference r;
 		while ((r = q.poll()) == null) {
@@ -41,11 +48,14 @@ public class WeakReferenceDemo {
 			// Suggest that the garbage collector should run.
 			System.gc();
 		}
+		System.out.println("Weak reference to " + value + " cleared");
+		
 		// Using strong reference to the Reference object, remove the entry
-		// from the Hashtable where the WeakReference object serves as that
+		// from the WeakHashMap where the WeakReference object serves as that
 		// entry's key.
 		value = map.remove(r);
-		// Remove the strong reference to the Object object, so that object
+		
+		// Remove the strong reference to the Employee object, so that object
 		// is eligible for garbage collection. Although not necessary in this
 		// program, because we are about to exit, imagine a continuously-
 		// running program and that this code is in some kind of long-lasting

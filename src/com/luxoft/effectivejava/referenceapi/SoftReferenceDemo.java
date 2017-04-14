@@ -12,49 +12,57 @@ public class SoftReferenceDemo {
 		// e2.
 		Employee e1 = new Employee("John Doe");
 		Employee e2 = new Employee("Jane Doe");
+
 		// Create a ReferenceQueue object that is strongly reachable from q.
-		ReferenceQueue q = new ReferenceQueue();
+		ReferenceQueue<Employee> q = new ReferenceQueue<Employee>();
+
 		// Create a SoftReference array with room for two references to
 		// SoftReference objects. The array is strongly reachable from sr.
 		SoftReference[] sr = new SoftReference[2];
+
 		// Assign a SoftReference object to each array element. That object
 		// is strongly reachable from that element. Each SoftReference object
 		// encapsulates an Employee object that is referenced by e1 or e2 (so
 		// the Employee object is softly reachable from the SoftReference
 		// object), and associates the ReferenceQueue object, referenced by
 		// q, with the SoftReference object.
-		sr[0] = new SoftReference(e1, q);
-		sr[1] = new SoftReference(e2, q);
+		sr[0] = new SoftReference<Employee>(e1, q);
+		sr[1] = new SoftReference<Employee>(e2, q);
+
 		// Remove the only strong references to the Employee objects.
 		e1 = null;
 		e2 = null;
+
 		// Poll reference queue until SoftReference object arrives.
 		Reference r;
 		while ((r = q.poll()) == null) {
 			System.out.println("Polling reference queue");
 			// Suggest that the garbage collector should run.
 			System.gc();
-			// Thread.sleep(1000);
 
 			System.out.println("\n*** Simulating OOME ... ***\n");
 			simulateOutOfMemoryError();
 			System.out.println("\n*** After OOME was thrown ***\n");
 
 		}
+
 		// Identify the SoftReference object whose soft reference was
 		// cleared, and print an appropriate message.
-		if (r == sr[0])
+		if (r == sr[0]) {
 			System.out.println("John Doe Employee object's soft reference " + "cleared");
-		else
+		} else {
 			System.out.println("Jane Doe Employee object's soft reference " + "cleared");
+		}
+		
 		// Attempt to retrieve a reference to the Employee object.
-
 		Employee e = (Employee) r.get();
+		
 		// e will always be null because soft references are cleared before
 		// references to their containing SoftReference objects are queued
 		// onto a reference queue.
-		if (e != null)
+		if (e != null) {
 			System.out.println(e.toString());
+		}
 	}
 
 	private static void simulateOutOfMemoryError() throws InterruptedException {

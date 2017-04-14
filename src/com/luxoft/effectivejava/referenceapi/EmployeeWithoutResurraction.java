@@ -1,12 +1,10 @@
 package com.luxoft.effectivejava.referenceapi;
 
-public class Employee {
-
-	static Employee resurrectedEmployee;
+public class EmployeeWithoutResurraction {
 
 	private String name;
 
-	public Employee(String name) {
+	public EmployeeWithoutResurraction(String name) {
 		super();
 		this.name = name;
 	}
@@ -15,10 +13,9 @@ public class Employee {
 	public String toString() {
 		return name;
 	}
-
+	
 	@Override
 	protected void finalize() throws Throwable {
-		System.out.println("Resurrect " + name);
-		resurrectedEmployee = this;
+		System.out.println("Finalize " + name);
 	}
 }
